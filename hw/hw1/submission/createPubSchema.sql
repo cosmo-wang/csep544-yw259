@@ -1,4 +1,4 @@
--- drop tables (for debugging)
+-- drop tables
 DROP TABLE IF EXISTS Author;
 DROP TABLE IF EXISTS Publication;
 DROP TABLE IF EXISTS Authored;
