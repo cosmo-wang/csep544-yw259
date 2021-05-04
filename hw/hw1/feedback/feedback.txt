@@ -1,0 +1,13 @@
+Problem 1 notes: None
+Problem 2 notes: None
+Problem 3 notes: None
+Problem 4 notes: Note: it's possible to write 4.2 without a crossproduct
+Problem 5 notes: None
+6.1 notes: None
+6.2 notes: None
+6.3 notes: I think it ends up being the same, but you probably want an inner join with author to get the names
+6.4 notes: None
+6.5 notes: None
+6.6 notes: None
+6.7 notes: None
+Problem 7 notes: It would be preferable to use the plotting library’s functionalities to convert to a log-log scale rather than modifying the values themselves. Histograms are generally plotted with bars rather than a line.
