@@ -1,0 +1,27 @@
+/************ data model **************/
+.type PersonType <: symbol
+.type DescriptionType <: symbol
+
+.decl person(name:PersonType, description:DescriptionType)
+.input person(filename="DATA/person.facts")
+
+.decl female(name:PersonType)
+.input female(filename="DATA/female.facts")
+
+.decl male(name:PersonType)
+.input male(filename="DATA/male.facts")
+
+.decl parent_child(p1:PersonType, p2:PersonType)
+.input parent_child(filename="DATA/parent_child.facts")
+
+.decl person_living(p:PersonType)
+.input person_living(filename="DATA/person_living.facts")
+
+/************* problem 0 **************/
+/**** Find all children of Priscilla ****/
+.decl p0(x:PersonType, d:DescriptionType)
+// NOTE: if you want to redirect the output to a file
+// you can use the syntax:
+// .output p0(filename="hw2-q3-0.ans")
+.output p0(IO=stdout)
+p0(x,d) :- parent_child("Priscilla",x), person(x,d).
