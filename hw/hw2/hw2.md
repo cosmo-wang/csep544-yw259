@@ -182,9 +182,9 @@ S_Comment varchar(105)
 
 Using a worksheet, run each query listed below multiple times. Take note of the minimum, maximum, and average times. Use the warm cache timing, which means you discard the first time the query is run. 
 
-  1. (15 points) What is the total number of parts offered by each supplier? The query should return the name of the supplier and the total number of parts.
-  2. (20 points) What is the cost of the most expensive part by any supplier? The query should return only the price of that most expensive part. No need to return the name.
-  3. (20 points) What is the cost of the most expensive part for each supplier? The query should return the name of the supplier and the cost of the most expensive part but you do not need to return the name of that part. 
+  1. (15 points) What is the total number of distinct parts offered by each supplier? The query should return the name of the supplier and the total number of parts. (use the `partkey` attribute)
+  2. (20 points) What is the cost of the most expensive part by any supplier? The query should return only the price of that most expensive part. No need to return the name. (this is the supply cost, not the retail price)
+  3. (20 points) What is the cost of the most expensive part for each supplier? The query should return the name of the supplier and the cost of the most expensive part but you do not need to return the name of that part. (this is the supply cost, not the retail price)
   4. (15 points) What is the total number of customers per nation? The query should return the name of the nation and the number of unique customers. 
-  5. (15 points) What is number of parts shipped between 10 October, 1996 and 10 November, 1996 for each supplier? The query should return the name of the supplier and the number of parts.
+  5. (15 points) What is number of distinct parts shipped between 10 October, 1996 and 10 November, 1996 (including both the start and end date of this range) for each supplier? The query should return the name of the supplier and the number of parts. (use the `partkey` attribute)
 
