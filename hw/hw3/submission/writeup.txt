@@ -1,0 +1,32 @@
+1. Describe any design decisions you made.
+For example any class or complex data structure you add to the project.
+If you used something other than a nested-loops join, describe the tradeoffs of the algorithm you chose.
+
+Ans: On a high level, I made all of the field of all classes private because I obeserved that 
+necessary getters are always properly defined in the interfaces. 
+Besides that, there are only two complex Objects that I added to make code looks cleaner.
+The first one is HeapPageIterator, which implements a Iterator<Tuple>. This is an 
+iterator that implements all the required functions so that the iterator() function of 
+HeapPage could simply returns an instance of this object. Note that I made this class private,
+as it's enough to know that it has the interface Iterator<Tuple>.
+The second one is HeapFileIterator, which implements a DbFileIterator. Similar to HeapPageIterator,
+I introduced this class so that the iterator() function of HeapFile could simply return an instance
+of this object. Inside this HeapFileIterator, I have a HeapPageIterator to iterate over each tuple
+on the current page within this HeapFile. So this HeapFileIterator also keeps track of which page it's
+currently on. Note that this inner HeapPageIterator actually has the type Iterator<Tuple>, as it's
+a private class of the HeapPage class. But this is sufficient from HeapFile's perspective as it just
+need to access the inner iterator's interface functions.
+
+2. Discuss and justify any changes you made to the API.
+
+Ans: I did not change the API described in any of the interfaces.
+
+3. Describe any missing or incomplete elements of your code.
+
+Ans: I finished everything except the extra credits part.
+
+4. Describe how long you spent on the assignment, and whether there was anything you found particularly difficult or confusing.
+
+Ans: I think I spent two afternoon on the assignment. And the most confusing part was HeapPage and HeapFile.
+It was tricky to understand how exactly are tuples arranged on a HeapPage. The equations provided in the spec
+took me sometime to understand.
