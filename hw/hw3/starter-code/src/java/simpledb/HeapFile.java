@@ -15,6 +15,10 @@ import java.util.*;
  */
 public class HeapFile implements DbFile {
 
+    private File file;
+    private int id;
+    private TupleDesc td;
+
     /**
      * Constructs a heap file backed by the specified file.
      * 
@@ -24,6 +28,9 @@ public class HeapFile implements DbFile {
      */
     public HeapFile(File f, TupleDesc td) {
         // some code goes here
+        this.file = f;
+        this.td = td;
+        this.id = this.file.hashCode();
     }
 
     /**
@@ -33,7 +40,7 @@ public class HeapFile implements DbFile {
      */
     public File getFile() {
         // some code goes here
-        return null;
+        return this.file;
     }
 
     /**
@@ -47,7 +54,7 @@ public class HeapFile implements DbFile {
      */
     public int getId() {
         // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        return this.id;
     }
 
     /**
@@ -57,13 +64,22 @@ public class HeapFile implements DbFile {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        return this.td;
     }
 
     // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
         // some code goes here
-        return null;
+        try {
+            RandomAccessFile raf = new RandomAccessFile(this.file, "r");
+            raf.seek(BufferPool.PAGE_SIZE * pid.pageNumber());
+            byte[] buffer = new byte[BufferPool.PAGE_SIZE];
+            raf.read(buffer);
+            raf.close();
+            return new HeapPage((HeapPageId)pid, buffer);
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
+        }
     }
 
     // see DbFile.java for javadocs
@@ -77,7 +93,7 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
-        return 0;
+        return (int) Math.ceil(this.file.length() / BufferPool.PAGE_SIZE);
     }
 
     // see DbFile.java for javadocs
@@ -96,11 +112,79 @@ public class HeapFile implements DbFile {
         return null;
     }
 
+    private class HeapFileIterator implements DbFileIterator, Serializable {
+        
+        private static final long serialVersionUID = 1L;
+        private int fileId;
+        private int numPages;
+        private TransactionId tid;
+        private int curPageNum;
+        private HeapPage curPage;
+        // type is not HeapPageIterator because that's a private class
+        private Iterator<Tuple> curPageIterator;
+        private boolean open;
+
+        public HeapFileIterator(int fileId, int numPages, TransactionId tid) {
+            this.fileId = fileId;
+            this.numPages = numPages;
+            this.tid = tid;
+            this.open = false;
+        }
+
+        @Override
+        public void open() throws DbException, TransactionAbortedException {
+            this.getHeapPage(0);
+        }
+
+        @Override
+        public boolean hasNext() throws DbException, TransactionAbortedException {
+            return open ? this.curPageNum < this.numPages - 1 || this.curPageIterator.hasNext() : false;
+        }
+
+        @Override
+        public Tuple next() throws DbException, TransactionAbortedException, NoSuchElementException {
+            if (open) {
+                if (this.hasNext() && curPageIterator.hasNext()) {
+                    return this.curPageIterator.next();
+                } else {
+                    this.getHeapPage(this.curPageNum + 1);
+                    return this.curPageIterator.next();
+                }
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        @Override
+        public void rewind() throws DbException, TransactionAbortedException {
+            this.getHeapPage(0);
+        }
+
+        @Override
+        public void close() {
+            this.open = false;
+        }
+
+        /**
+         * Point the current file iterator to a specific HeapPage in the HeapFile.
+         * 
+         * @param pageNum The page number to point to.
+         * @throws DbException
+         * @throws TransactionAbortedException
+         */
+        private void getHeapPage(int pageNum) throws DbException, TransactionAbortedException {
+            this.curPageNum = pageNum;
+            HeapPageId heapPageId = new HeapPageId(this.fileId, this.curPageNum);
+            this.curPage = (HeapPage) Database.getBufferPool().getPage(this.tid, heapPageId, Permissions.READ_WRITE);
+            this.curPageIterator = this.curPage.iterator();
+            this.open = true;
+        }
+    }
+
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
-        return null;
+        return new HeapFileIterator(this.id, this.numPages(), tid);
     }
-
 }
 
