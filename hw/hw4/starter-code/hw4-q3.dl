@@ -28,7 +28,7 @@ p0(x,d) :- parent_child("Priscilla",x), person(x,d).
 
 /************* problem 1 **************/
 .decl p1(x:PersonType, d:DescriptionType)
-.output p1(filename="../submission/hw2-q3-1.ans")
+.output p1(filename="../submission/hw4-q3-1.ans")
 p1(x,d) :- p0(x,d).
 p1(x,d) :- p1(y,_), parent_child(y,x), person(x,d).
 
@@ -37,7 +37,7 @@ p1(x,d) :- p1(y,_), parent_child(y,x), person(x,d).
 .decl male_children_max(n:number)
 .decl female_children_max(n:number)
 .decl p2(x:PersonType, d:DescriptionType, n:number)
-.output p2(filename="../submission/hw2-q3-2.ans")
+.output p2(filename="../submission/hw4-q3-2.ans")
 children_count(x,n) :- person(x, _), n=count:{parent_child(x,_)}.
 male_children_max(n) :- n=max children:{male(x), children_count(x,children)}.
 female_children_max(n) :- n=max children:{female(x), children_count(x,children)}.
@@ -48,7 +48,7 @@ p2(x,d,n) :- person(x,d), female(x), female_children_max(n), children_count(x,n)
 /************* problem 3 **************/
 .decl person_generation(x:PersonType, n:number)
 .decl p3(x:PersonType, m1:number, m2:number)
-.output p3(filename="../submission/hw2-q3-3.ans")
+.output p3(filename="../submission/hw4-q3-3.ans")
 person_generation(x,0) :- person(x,_), !parent_child(_,x).
 person_generation(y,n+1) :- parent_child(x,y), person_generation(x,n).
 p3(x,m1,m2) :- person_living(x), m1=min n:{person_generation(x,n)}, m2=max n:{person_generation(x,n)}.
@@ -57,7 +57,7 @@ p3(x,m1,m2) :- person_living(x), m1=min n:{person_generation(x,n)}, m2=max n:{pe
 .decl p4(x:PersonType)
 .decl female_ancestor(x:PersonType,y:PersonType)
 .decl not_p4(x:PersonType)
-.output p4(filename="../submission/hw2-q3-4.ans")
+.output p4(filename="../submission/hw4-q3-4.ans")
 female_ancestor(x,y) :- parent_child(x,y), female(x).
 female_ancestor(x,z) :- female_ancestor(x,y), female_ancestor(y,z).
 not_p4(x) :- female(x), person_living(y), !female_ancestor(x,y).
@@ -66,6 +66,6 @@ p4(x) :- female(x), !not_p4(x).
 /************* problem 5 **************/
 .decl p5(x:PersonType)
 .decl not_p5(x:PersonType)
-.output p5(filename="../submission/hw2-q3-5.ans")
+.output p5(filename="../submission/hw4-q3-5.ans")
 not_p5(x) :- p4(x), parent_child(x,y), p4(y).
 p5(x) :- p4(x), !not_p5(x).
