@@ -29,7 +29,7 @@ class Anime:
         self.description = description
 
     def __str__(self):
-        return f"{self.anime_id}\t{self.name}\t{self.tv_episodes}\t{self.movies}\t{self.status}\t{self.genre}\t{self.year}\t{self.episode_length}\t{self.douban_ratings}\t{self.description}"
+        return f"{self.name}\t{self.tv_episodes}\t{self.movies}\t{self.status}\t{self.genre}\t{self.year}\t{self.episode_length}\t{self.douban_ratings}\t{self.description}"
 
 class OldAnime:
     def __init__(self, anime_id, story, illustration, music, passion, start_date, end_date, times_watched):
@@ -57,15 +57,16 @@ class NewAnime:
         return f"{self.anime_id}\t{self.seasons}\t{self.release_date}\t{self.broadcast_day}\t{self.season_rankings}"
 
 class Quote:
-    def __init__(self, quote_id, content, month, zh_translation, person):
+    def __init__(self, quote_id, anime_id, content, month, zh_translation, person):
         self.quote_id = quote_id
+        self.anime_id = anime_id
         self.content = content
         self.month = month
         self.zh_translation = zh_translation
         self.person = person
 
     def __str__(self):
-        return f"{self.quote_id}\t{self.content}\t{self.month}\t{self.zh_translation}\t{self.person}"
+        return f"{self.anime_id}\t{self.content}\t{self.month}\t{self.zh_translation}\t{self.person}"
 
 f_ratings = open(INPUT_DIR + 'Ratings.json')
 f_new_animes = open(INPUT_DIR + 'NewAnimes.json')
@@ -75,13 +76,12 @@ f_anime = open(OUTPUT_DIR + 'anime.txt', 'w')
 f_old_anime = open(OUTPUT_DIR + 'old_anime.txt', 'w')
 f_new_anime = open(OUTPUT_DIR + 'new_anime.txt', 'w')
 f_quote = open(OUTPUT_DIR + 'quote.txt', 'w')
-f_quoted_from = open(OUTPUT_DIR + 'quoted_from.txt', 'w')
 
 ratings = json.load(f_ratings)['results']
 new_animes = json.load(f_new_animes)['results']
 quotes = json.load(f_quotes)['results']
 
-anime_id = 0
+anime_id = 1
 anime_to_id = {}
 for rating in ratings:
     anime = Anime(anime_id, safe_get(rating, "name"), safe_get(rating, "tv_episodes", 0), safe_get(rating, "movies"), \
@@ -104,16 +104,14 @@ for new_anime in new_animes:
         anime_id += 1
     else:
         cur_id = anime_to_id[safe_get(new_anime, "name")]
-    new_anime_obj = NewAnime(cur_id, str(safe_get(new_anime, "season").split("，")).replace("[", "{").replace("]", "}"), safe_get(new_anime, "start_date"), \
+    new_anime_obj = NewAnime(cur_id, safe_get(new_anime, "season"), safe_get(new_anime, "start_date"), \
         safe_get(new_anime, "next_episode_day"), "\"" + safe_get(new_anime, "seasons_ranking").replace('\'', "\\\"") + "\"" )
     f_new_anime.write(str(new_anime_obj) + '\n')
         
 
-quote_id = 0
+quote_id = 1
 for quote in quotes:
-    quote_obj = Quote(quote_id, safe_get(quote, "content").replace('\n', ""), safe_get(quote, "month"), \
+    quote_obj = Quote(quote_id, anime_to_id[safe_get(quote, "bangumi")], safe_get(quote, "content").replace('\n', ""), safe_get(quote, "month"), \
         safe_get(quote, "translation").replace('\n', ""), safe_get(quote, "person"))
     f_quote.write(str(quote_obj) + '\n')
-    anime_name = safe_get(quote, "bangumi")
-    f_quoted_from.write(f"{quote_id}\t{anime_to_id[anime_name]}" + '\n')
     quote_id += 1
